@@ -2,9 +2,7 @@ import discord
 from discord.ext import commands
 import uuid
 from time import sleep
-
 from discord.utils import get
-
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
 import re
@@ -22,9 +20,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 # [memberdata],[email],[verification status]
-
 verif = 0
-
 
 def build_hello_email(to, subject):
     import os
@@ -32,12 +28,12 @@ def build_hello_email(to, subject):
     from sendgrid.helpers.mail import Mail
 
     message = Mail(
-        from_email='noreply@tkhroboclub.tech',
+        from_email='noreply@nexus-tkh.org',
         to_emails=to,
         subject=subject,
-        html_content='<strong>and easy to do anywhere, even with Python</strong>')
+        html_content=f"Hey!, <br> You're <strong>{subject}</strong>")
     try:
-        sendgrid_client = SendGridAPIClient('')
+        sendgrid_client = SendGridAPIClient(os.environ['sendgrid_apikey'])
         response = sendgrid_client.send(message)
         print(response.status_code)
         print(response.body)
