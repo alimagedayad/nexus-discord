@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 # Mac OS files
 .DS_Store
 
+=======
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -23,6 +26,10 @@ parts/
 sdist/
 var/
 wheels/
+<<<<<<< HEAD
+=======
+share/python-wheels/
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 *.egg-info/
 .installed.cfg
 *.egg
@@ -41,14 +48,25 @@ pip-delete-this-directory.txt
 # Unit test / coverage reports
 htmlcov/
 .tox/
+<<<<<<< HEAD
+=======
+.nox/
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
+<<<<<<< HEAD
 .hypothesis/
 .pytest_cache/
+=======
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 
 # Translations
 *.mo
@@ -58,6 +76,10 @@ coverage.xml
 *.log
 local_settings.py
 db.sqlite3
+<<<<<<< HEAD
+=======
+db.sqlite3-journal
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 
 # Flask stuff:
 instance/
@@ -70,22 +92,55 @@ instance/
 docs/_build/
 
 # PyBuilder
+<<<<<<< HEAD
+=======
+.pybuilder/
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
+<<<<<<< HEAD
 # pyenv
 .python-version
 
 # celery beat schedule file
 celerybeat-schedule
+=======
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 
 # SageMath parsed files
 *.sage.py
 
 # Environments
+<<<<<<< HEAD
 #.env
+=======
+.env
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 .venv
 env/
 venv/
@@ -105,5 +160,25 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+<<<<<<< HEAD
 firebase.json
 .env
+=======
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+yehia.py
+temp.py
+temp2.py
+firebase.json
+init.py
+>>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
