@@ -92,22 +92,17 @@ instance/
 docs/_build/
 
 # PyBuilder
-<<<<<<< HEAD
-=======
 .pybuilder/
->>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
-<<<<<<< HEAD
 # pyenv
 .python-version
 
 # celery beat schedule file
 celerybeat-schedule
-=======
 # IPython
 profile_default/
 ipython_config.py
@@ -130,17 +125,14 @@ __pypackages__/
 # Celery stuff
 celerybeat-schedule
 celerybeat.pid
->>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 
 # SageMath parsed files
 *.sage.py
 
 # Environments
-<<<<<<< HEAD
 #.env
-=======
+
 .env
->>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
 .venv
 env/
 venv/
@@ -160,10 +152,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-<<<<<<< HEAD
 firebase.json
 .env
-=======
+
 .dmypy.json
 dmypy.json
 
@@ -179,6 +170,4 @@ cython_debug/
 yehia.py
 temp.py
 temp2.py
-firebase.json
 init.py
->>>>>>> 9bb316028aad12d5227729683bdb046da2e4d463
