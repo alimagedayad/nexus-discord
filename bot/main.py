@@ -3,7 +3,7 @@ from discord.ext import commands
 import uuid
 import os
 import asyncio
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from time import sleep
 from discord.utils import get
 from sendgrid import SendGridAPIClient
@@ -14,7 +14,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-load_dotenv()  # take environment variables from .env.
+# load_dotenv()  # take environment variables from .env.
 intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(command_prefix="!", intents=intents)
