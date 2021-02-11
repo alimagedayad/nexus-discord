@@ -2,18 +2,22 @@ import discord
 from discord.ext import commands
 import uuid
 import os
+import asyncio
+from dotenv import load_dotenv
 from time import sleep
 from discord.utils import get
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
+
 import re
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
+load_dotenv()  # take environment variables from .env.
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix=".", intents=intents)
+client = commands.Bot(command_prefix="!", intents=intents)
 membertickets = [[], [], []]
 
 cred = credentials.Certificate(
@@ -38,7 +42,6 @@ firebase_admin.initialize_app(
     cred,
     {"databaseURL": "https://tkh-nexus-discord.firebaseio.com"},
 )
-
 
 db = firestore.client()
 verif = 0
@@ -66,12 +69,21 @@ def build_hello_email(to, subject):
         print(e)
 
 
-def saveUIDinDB(userID, token, roles):
-    doc_ref = db.collection("users").document(str(userID))
-    role_names = [role.name for role in roles][1:]
-    roles = ",".join(role_names)
-    doc_ref.set({"id": userID, "token": token, "roles": roles, "verified": False})
+def saveUIDinDB(userID, token, roles, email):
 
+    docs = db.collection("users").where("email", "==", email).stream()
+    stream_empty = True
+    for doc in docs:
+        print('SUDB: ', 401)
+        return 401
+
+    if stream_empty == True:
+        doc_ref = db.collection("users").document(str(userID))
+        role_names = [role.name for role in roles][1:]
+        roles = ",".join(role_names)
+        doc_ref.set({"id": userID, "token": token, "roles": roles, "email": email, "verified": False})
+        print('SUDB: ', 200)
+        return 200
 
 try:
 
@@ -79,10 +91,13 @@ try:
     async def on_ready():
         print("Bot is ready!")
 
+
     def not_bot_reaction(reaction, user):
         return user != client.user
 
+
     orMessage = ""
+
 
     @client.event
     async def on_member_join(member):
@@ -102,8 +117,9 @@ try:
         )
 
         await channel.send(
-            "Welcome to the official server for TKH Coventry University!!!\nFirst of all we need you to verify your tkh email address...\nplease enter `.verify email youremail@tkh.edu.eg`"
+            "Welcome to the official server for TKH Coventry University!!!\nFirst of all we need you to verify your tkh email address...\nplease enter `!verify email youremail@tkh.edu.eg`"
         )
+
 
     @client.event
     async def on_member_remove(member):
@@ -115,27 +131,34 @@ try:
                     await membertickets[0][i].delete()
         print(f"{member} has left the server")
 
+
     @client.command()
     # @commands.has_role("Waiting for verification")
     async def verify(ctx, arg, reply):
         # try:
+        global role3
         role_names = [role.name for role in ctx.message.author.roles][1:]
         if "Waiting for verification" in role_names:
             if arg == "email":
                 regex = "[^@]+@[^@]+\.[^@]+"
-                res = reply[reply.index("@") + 1 :]
+                res = reply[reply.index("@") + 1:]
                 if re.search(regex, reply):
                     if res == "tkh.edu.eg":
                         verifyCode = uuid.uuid4().hex[
-                            :4
-                        ]  # Might reduce uniqueness because of slicing
-                        saveUIDinDB(
-                            ctx.message.author.id, verifyCode, ctx.message.author.roles
+                                     :4
+                                     ]  # Might reduce uniqueness because of slicing
+                        dbResponse = saveUIDinDB(
+                            ctx.message.author.id, verifyCode, ctx.message.author.roles, reply
                         )
+
+                        if dbResponse == 401:
+                            await ctx.send('This email already exists!')
+                            return
+
                         build_hello_email(reply, f"verification code is {verifyCode}")
                         await ctx.send(f"The verification code was sent to {reply}!")
                         await ctx.send(
-                            f"To verify your account send ```.verify code your_verification_code```"
+                            f"To verify your account send ```!verify code your_verification_code```"
                         )
                     else:
                         await ctx.send(f"Invalid domain")
@@ -145,6 +168,17 @@ try:
                 userID = ctx.message.author.id
                 token = reply
                 try:
+                    def nameCheck(msg):
+                        return msg.author == ctx.author and msg.channel == ctx.channel
+
+                    try:
+                        await ctx.send(f"Hey <@{userID}>, what's your name? ")
+                        msg = await client.wait_for("message", check=nameCheck,
+                                                    timeout=180)  # 30 seconds to reply
+                        fullname = msg.content
+                    except asyncio.TimeoutError:
+                        await ctx.send("Sorry, you didn't reply in time!")
+
                     # role, role1, role2, role3 = None
                     docs = db.collection("users").where("id", "==", userID).stream()
                     stream_empty = True
@@ -161,10 +195,10 @@ try:
                             doc_ref.update({"verified": True})
 
                             member = ctx.message.author
-                            await ctx.send(f"0️⃣ = Year 0 (Foundation)\n1️⃣ = Year 1")
                             message = await ctx.send("In which year you're in?")
                             await message.add_reaction(emoji="0️⃣")
                             await message.add_reaction(emoji="1️⃣")
+                            await ctx.send(f"0️⃣ = Year 0 (Foundation)\n1️⃣ = Year 1")
 
                             def check(reaction, user):
                                 emojis = [
@@ -189,8 +223,8 @@ try:
                                     "🥰",
                                 ]
                                 return (
-                                    str(reaction.emoji) in emojis
-                                    and user != client.user
+                                        str(reaction.emoji) in emojis
+                                        and user != client.user
                                 )
 
                             reaction, user = await client.wait_for(
@@ -206,15 +240,16 @@ try:
                                     member.guild.roles, name="Year 1"
                                 )
                             if role:
-                                await ctx.send(
-                                    f"💻 = School of Computing \n📐 = School of Engineering\n🎨 = School of Media and Design\n💹 = School of Business\n😄 = School of Psychology"
-                                )
+
                                 message2 = await ctx.send("Which School:")
                                 await message2.add_reaction(emoji="💻")
                                 await message2.add_reaction(emoji="📐")
                                 await message2.add_reaction(emoji="🎨")
                                 await message2.add_reaction(emoji="💹")
                                 await message2.add_reaction(emoji="😄")
+                                await ctx.send(
+                                    f"💻 = School of Computing \n📐 = School of Engineering\n🎨 = School of Media and Design\n💹 = School of Business\n😄 = School of Psychology"
+                                )
 
                                 reaction, user = await client.wait_for(
                                     "reaction_add", check=check
@@ -363,6 +398,10 @@ try:
                                     await ctx.send(
                                         f"Congrats <@{userID}>! Your account is verified now! \n Welcome abroad!"
                                     )
+                                    await member.edit(nick=fullname)
+                                    await ctx.channel.edit(name=f'🔒 {ctx.channel}')
+                                    await ctx.channel.set_permissions(ctx.author, read_messages=True,
+                                                                      send_messages=False)
                     if stream_empty:
                         await ctx.send(
                             "Please try again and if the issue persists contact our support team on nexus@tkh.edu.eg"
@@ -372,6 +411,7 @@ try:
         else:
             await ctx.send("Your account is already verified!")
 
+
     # except:
     #     pass
     # await ctx.send(f"'arg: ', {arg}, 'reply:', {reply}")
@@ -380,6 +420,7 @@ try:
     async def fs(ctx, arg):
         if arg == "test":
             await ctx.send("Test!")
+
 
     # @client.command()
     # @commands.has_role("Waiting for verification")
