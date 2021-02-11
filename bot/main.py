@@ -8,7 +8,8 @@ from time import sleep
 from discord.utils import get
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
-
+# from dotenv import load_dotenv
+# load_dotenv()
 import re
 import firebase_admin
 from firebase_admin import credentials
@@ -70,11 +71,9 @@ def build_hello_email(to, subject):
 
 
 def saveUIDinDB(userID, token, roles, email):
-
     docs = db.collection("users").where("email", "==", email).stream()
     stream_empty = True
     for doc in docs:
-        print('SUDB: ', 401)
         return 401
 
     if stream_empty == True:
@@ -84,6 +83,7 @@ def saveUIDinDB(userID, token, roles, email):
         doc_ref.set({"id": userID, "token": token, "roles": roles, "email": email, "verified": False})
         print('SUDB: ', 200)
         return 200
+
 
 try:
 
@@ -171,16 +171,8 @@ try:
                     def nameCheck(msg):
                         return msg.author == ctx.author and msg.channel == ctx.channel
 
-                    try:
-                        await ctx.send(f"Hey <@{userID}>, what's your name? ")
-                        msg = await client.wait_for("message", check=nameCheck,
-                                                    timeout=180)  # 30 seconds to reply
-                        fullname = msg.content
-                    except asyncio.TimeoutError:
-                        await ctx.send("Sorry, you didn't reply in time!")
-
                     # role, role1, role2, role3 = None
-                    docs = db.collection("users").where("id", "==", userID).stream()
+                    docs = db.collection("users").where("id", "==", userID).where('verified', '==', False).stream()
                     stream_empty = True
                     for doc in docs:
                         stream_empty = False
@@ -193,6 +185,14 @@ try:
                         if userDict["token"] == token:
                             doc_ref = db.collection("users").document(str(userID))
                             doc_ref.update({"verified": True})
+
+                            try:
+                                await ctx.send(f"Hey <@{userID}>, what's your name? ")
+                                msg = await client.wait_for("message", check=nameCheck,
+                                                            timeout=180)  # 30 seconds to reply
+                                fullname = msg.content
+                            except asyncio.TimeoutError:
+                                await ctx.send("Sorry, you didn't reply in time!")
 
                             member = ctx.message.author
                             message = await ctx.send("In which year you're in?")
@@ -404,7 +404,8 @@ try:
                                                                       send_messages=False)
                     if stream_empty:
                         await ctx.send(
-                            "Please try again and if the issue persists contact our support team on nexus@tkh.edu.eg"
+                            "Please try again and if the issue persists contact our support team by sending an email to "
+                            "nexus@tkh.edu.eg "
                         )
                 except Exception as e:
                     print("Oops!. Catched!!: ", e)
@@ -451,7 +452,7 @@ try:
     #         elif reply == "resend":
     #             await ctx.channel.send("The verification code was resent to your email")
 
-    client.run("NjQyMzE2NTk4Mzk2MzIxNzky.XcVJ8g.ND51DUv_gcqmHWrrkwNwOqC3n5U")
+    client.run(os.environ.get("discordToken"))
 
 
 except Exception as e:
