@@ -187,7 +187,7 @@ try:
                             doc_ref.update({"verified": True})
 
                             try:
-                                await ctx.send(f"Hey <@{userID}>, what's your fullname? (you've 180 seconds to reply)")
+                                await ctx.send(f"Hey <@{userID}>, what's your first and last name? (you've 180 seconds to reply)")
                                 msg = await client.wait_for("message", check=nameCheck,
                                                             timeout=180)  # 30 seconds to reply
                                 fullname = msg.content
